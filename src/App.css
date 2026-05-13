@@ -1,0 +1,876 @@
+/* 
+  * = alle Elemente
+  box-sizing: border-box sorgt dafür, dass padding und border
+  in der Breite/Höhe mit eingerechnet werden.
+  Das macht Layouts deutlich berechenbarer.
+*/
+* {
+  box-sizing: border-box;
+}
+
+/* 
+  Standard-Styling für den ganzen Body:
+  - kein Browser-Standardrand
+  - Standardschrift
+  - Hintergrundfarbe der ganzen App
+  - Standard-Textfarbe
+*/
+body {
+  margin: 0;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* 
+  Sorgt dafür, dass Buttons, Inputs und Selects
+  dieselbe Schrift wie der Rest der App verwenden.
+*/
+button,
+input,
+select {
+  font: inherit;
+}
+
+/* 
+  Gemeinsames Disabled-Styling für Form-Elemente:
+  - leicht ausgegraut
+  - Mauszeiger zeigt "nicht erlaubt"
+*/
+button:disabled,
+input:disabled,
+select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* 
+  Äußerste Hülle der App
+  - nimmt mindestens die volle Bildschirmhöhe ein
+  - Abstand innen zur Browserkante
+*/
+.app-shell {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* 
+  Hauptlayout:
+  2 Spalten
+  - links Editor
+  - rechts Vorschau
+  max-width begrenzt die Gesamtbreite
+*/
+.layout {
+  max-width: 1450px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(700px, 1.15fr) minmax(380px, 0.85fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* 
+  Weißes Panel-Design für Editor und Vorschau:
+  - weiße Karte
+  - runde Ecken
+  - Innenabstand
+  - leichter Schatten
+*/
+.panel {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+/* 
+  Macht das rechte Vorschau-Panel sticky,
+  damit es beim Scrollen sichtbar bleibt.
+  top: 24px = Abstand zum oberen Fensterrand
+*/
+.preview-panel-sticky {
+  position: sticky;
+  top: 24px;
+}
+
+/* 
+  Haupttitel im Editorbereich
+*/
+.editor-title {
+  margin: 0 0 24px;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+/* 
+  Kopfbereich der Vorschau:
+  Titel links, Export-Hinweis rechts
+*/
+.preview-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+/* 
+  Überschrift der Vorschau
+*/
+.preview-heading {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+/* 
+  Kleine Zusatzinfo bei der Vorschau,
+  z. B. Exportgröße
+*/
+.preview-meta {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* 
+  Zweispaltiges Formular-Grid
+  Wird für viele Eingabebereiche benutzt
+*/
+.grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* 
+  Zweispaltiges Grid speziell für Tenant-Felder
+  Kann in Responsive-Bereichen auf 1 Spalte umschalten
+*/
+.grid-two-tenant {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* 
+  Standard-Wrapper für ein Formularfeld:
+  Label oben, Feld darunter
+*/
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 
+  Label-Styling für Eingabefelder
+*/
+.field label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 
+  Standard-Styling für Inputs und Selects
+*/
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: white;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 48px;
+}
+
+/* 
+  Kopfbereich einer größeren Sektion,
+  z. B. "Floors & tenants"
+*/
+.section-header {
+  margin-top: 28px;
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 
+  Überschrift in einer Sektion
+*/
+.section-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+/* 
+  Gruppe von Buttons rechts in der Sektionsüberschrift
+*/
+.section-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* 
+  Gemeinsames Button-Basisstyling
+  Gilt für:
+  - primäre Buttons
+  - sekundäre Buttons
+  - Ghost Buttons
+  - Etagen-Pfeile
+  - Upload-Buttons
+  - Modus-Buttons (Text/Logo)
+*/
+.primary-btn,
+.secondary-btn,
+.ghost-btn,
+.move-buttons button,
+.upload-btn,
+.mode-btn {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* 
+  Primärer Button: dunkler Hintergrund
+*/
+.primary-btn {
+  background: #111827;
+  color: white;
+}
+
+.primary-btn:hover {
+  background: #1f2937;
+}
+
+/* 
+  Sekundärer Button: hellgrau
+*/
+.secondary-btn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.secondary-btn:hover {
+  background: #d1d5db;
+}
+
+/* 
+  Ghost-Buttons / neutrale Buttons mit Rand
+*/
+.ghost-btn,
+.move-buttons button,
+.upload-btn,
+.mode-btn {
+  background: white;
+  color: #111827;
+  border: 1px solid #d1d5db;
+}
+
+.ghost-btn:hover,
+.move-buttons button:hover,
+.upload-btn:hover,
+.mode-btn:hover {
+  background: #f9fafb;
+}
+
+/* 
+  Disabled-Zustand für bestimmte Buttons
+*/
+.move-buttons button:disabled,
+.mode-btn:disabled,
+.upload-btn.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* 
+  Liste aller Etagenkarten
+*/
+.floor-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 
+  Eine einzelne Etagenkarte
+*/
+.floor-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  padding: 20px;
+}
+
+/* 
+  Kopfbereich einer Etage:
+  links Etagenname, rechts Buttons
+*/
+.floor-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* 
+  Layout für das Etagen-Label-Eingabefeld
+  z. B. "Floor" links und Input rechts
+*/
+.floor-label-edit {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.floor-label-edit label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.floor-label-edit input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+/* 
+  Buttons zum Verschieben / Löschen einer Etage
+*/
+.move-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* 
+  Liste aller Tenants innerhalb einer Etage
+*/
+.tenant-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 
+  Karte für einen einzelnen Tenant / Eintrag
+*/
+.tenant-card {
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 20px;
+  padding: 16px;
+}
+
+/* 
+  Umschalter zwischen "Text" und "Logo"
+*/
+.entry-mode-switch {
+  display: inline-flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+/* 
+  Aktiver Zustand für Modus-Buttons
+*/
+.mode-btn.active {
+  background: #111827;
+  color: white;
+  border-color: #111827;
+}
+
+/* 
+  Aktionszeile eines Tenants:
+  Upload, Status, Vorschau, Löschen etc.
+*/
+.tenant-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+/* 
+  Kleiner Status-Text zum Logo
+*/
+.logo-status {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* 
+  Kleine Logovorschau im Editor
+*/
+.editor-logo-preview {
+  width: 92px;
+  height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 6px;
+}
+
+/* 
+  Bild innerhalb der Mini-Vorschau
+*/
+.editor-logo-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* 
+  Bereich mit Hauptaktionen:
+  Speichern, Laden, Reset, PNG Export
+*/
+.toolbar {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 
+  Gelber Hinweisbanner unter den Buttons
+*/
+.hint-box {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 14px;
+}
+
+/* 
+  Liste in der Anleitung unter dem Hinweisbanner
+*/
+.hint-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+/* 
+  Einzelne Punkte in der Anleitung
+*/
+.hint-list li {
+  margin-bottom: 8px;
+  line-height: 1.45;
+}
+
+/* 
+  Falls du einen extra Hinweistext im Banner brauchst
+  (aktuell nicht zwingend notwendig)
+*/
+.hint-export {
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+  /* 
+    Anleitung unter dem gelben Banner
+  */
+  .instruction-box {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+  }
+
+  .hint-list {
+    margin: 10px 0 0;
+    padding-left: 18px;
+  }
+
+  .hint-list li {
+    margin-bottom: 8px;
+    line-height: 1.45;
+  }
+
+/* 
+  Wrapper um die Vorschau
+*/
+.preview-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 
+  Die eigentliche Handy-Vorschau
+  360 x 640 = 9:16 Verhältnis
+*/
+.phone-preview {
+  position: relative;
+  width: 360px;
+  height: 640px;
+  border-radius: 28px;
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 
+  Warnbox unter der Vorschau bei vielen Einträgen
+*/
+.preview-warning {
+  width: min(360px, 100%);
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+/* 
+  Stärkerer Warnzustand
+*/
+.preview-warning.strong {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* 
+  Kleiner Balken oben in der Vorschau
+*/
+.preview-accent {
+  height: 6px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+/* 
+  Haupttitel in der Vorschau
+*/
+.preview-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.08;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+/* 
+  Gebäudename in der Vorschau
+*/
+.preview-building {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+/* 
+  Mittlerer Bereich der Vorschau mit Etagen / Firmen
+*/
+.preview-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 
+  Standard-Etagenlayout: untereinander
+*/
+.floors {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 
+  Zweispaltiges Layout bei vielen Einträgen
+*/
+.floors-two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  align-content: start;
+}
+
+/* 
+  Einzelne Zeile pro Etage
+*/
+.floor-row {
+  display: grid;
+  align-items: start;
+}
+
+/* 
+  Etagenbezeichnung in der Vorschau
+*/
+.floor-label {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* 
+  Inhalt rechts neben der Etagenbezeichnung
+*/
+.floor-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 
+  Eine einzelne Firmen-/Tenant-Zeile in der Vorschau
+*/
+.tenant-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* 
+  Box für das Logo in der Vorschau
+*/
+.tenant-logo-box {
+  display: flex;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+/* 
+  Das eigentliche Logo-Bild
+*/
+.tenant-logo {
+  display: block;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: transparent !important;
+}
+
+/* 
+  Textblock für Name + Untertitel
+*/
+.tenant-text-wrap {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 
+  Firmenname / Tenant-Name
+*/
+.tenant-name {
+  font-weight: 700;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+/* 
+  Unterzeile / Subtitle
+*/
+.tenant-subtitle {
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+/* 
+  Trennlinie zwischen Etagen
+*/
+.floor-line {
+  width: 100%;
+  height: 1px;
+}
+
+/* 
+  Footer in der Vorschau
+*/
+.preview-footer {
+  padding-top: 16px;
+  line-height: 1.3;
+}
+
+/* 
+  Toast-Meldung oben rechts
+*/
+.toast {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 9999;
+  min-width: 240px;
+  max-width: 380px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  color: white;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.22);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+/* 
+  Farbstile der Toasts
+*/
+.toast-info {
+  background: #374151;
+}
+
+.toast-success {
+  background: #166534;
+}
+
+.toast-error {
+  background: #b91c1c;
+}
+
+/* 
+  RESPONSIVE: bis 1180px
+  - Layout wird einspaltig
+  - sticky Vorschau wird normal
+  - Vorschau kleiner
+*/
+@media (max-width: 1180px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-panel-sticky {
+    position: static;
+  }
+
+  .phone-preview {
+    width: 340px;
+    height: 604px;
+  }
+
+  .preview-warning {
+    width: min(340px, 100%);
+  }
+}
+
+/* 
+  RESPONSIVE: bis 900px
+  Tenant-Eingabefelder werden einspaltig
+*/
+@media (max-width: 900px) {
+  .grid-two-tenant {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 
+  RESPONSIVE: bis 700px
+  Kompakteres Layout für mobile Geräte
+*/
+@media (max-width: 700px) {
+  .app-shell {
+    padding: 14px;
+  }
+
+  .panel {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .grid-two,
+  .grid-two-tenant {
+    grid-template-columns: 1fr;
+  }
+
+  .floor-card-top {
+    flex-direction: column;
+  }
+
+  .floor-label-edit {
+    grid-template-columns: 1fr;
+  }
+
+  .phone-preview {
+    width: 270px;
+    height: 480px;
+    border-radius: 22px;
+  }
+
+  .preview-warning {
+    width: min(270px, 100%);
+  }
+
+  .editor-title {
+    font-size: 20px;
+  }
+
+  .toast {
+    left: 14px;
+    right: 14px;
+    max-width: none;
+    min-width: 0;
+  }
+
+.custom-editor-box {
+  margin-bottom: 20px;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.custom-header-logo-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-header-logo {
+  display: block;
+  max-height: 120px;
+  object-fit: contain;
+}
+.custom-header-logo-fixed {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 220px;
+  height: 90px;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.custom-header-logo {
+  display: block;
+  max-width: 220px;
+  max-height: 90px;
+  object-fit: contain;
+}
+
+}
