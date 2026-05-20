@@ -1097,7 +1097,8 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
                 key={floor.id}
                 style={{
                   gridTemplateColumns: `${layout.floorCol}px minmax(0, 1fr)`,
-                  minHeight: `${rowHeight}px`,
+                  minHeight: `${rowHeight + Math.max(0, floor.tenants.length - 1) * 34
+                  }px`,
                   paddingTop: `${Math.max(6, rowHeight * 0.08)}px`,
                   paddingBottom: `${Math.max(6, rowHeight * 0.08)}px`,
                 }}
