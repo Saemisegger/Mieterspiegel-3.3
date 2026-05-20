@@ -1030,8 +1030,15 @@ const compactVerticalPadding = isVeryDense ? 2 : isDense ? 4 : Math.max(6, rowHe
 
 // Höhe einer Etage berechnen. Zusätzliche Parteien brauchen mehr Platz,
 // aber bei dichter Vorschau weniger Zusatzhöhe, damit alles kompakter bleibt.
-const getFloorVisualHeight = (floor) =>
-  rowHeight + Math.max(0, (floor?.tenants?.length || 0) - 1) * extraPerTenant;
+const getFloorVisualHeight = (floor) => {
+  const tenantCount = floor?.tenants?.length || 0;
+
+  if (tenantCount === 0) {
+    return isVeryDense ? 32 : isDense ? 38 : Math.max(42, rowHeight * 0.55);
+  }
+
+  return rowHeight + Math.max(0, tenantCount - 1) * extraPerTenant;
+};
 
 // In der 2-Spalten-Ansicht müssen links und rechts pro Zeile
 // exakt dieselbe Höhe haben, damit die Trennlinien auf gleicher Höhe liegen.
