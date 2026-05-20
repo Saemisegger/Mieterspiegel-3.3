@@ -94,8 +94,6 @@ const TRANSLATIONS = {
     instructionsStep3: "Mit „Projekt speichern“ wird eine JSON-Datei erstellt. Diese kannst du später wieder laden und weiterbearbeiten.",
     instructionsStep4: "Mit „Projekt laden“ öffnest du eine gespeicherte JSON-Datei erneut im Editor.",
     instructionsStep5: "Mit „PNG erstellen“ exportierst du die aktuelle Vorschau als Bild im Format 1080 × 1920 Pixel.",
-    removeHeaderLogo: "Header-Logo entfernen",
-    removeBackgroundImage: "Hintergrundbild entfernen",
   },
 
   fr: {
@@ -321,8 +319,6 @@ const TRANSLATIONS = {
     instructionsStep3: "Use “Save project” to create a JSON file. You can load it again later and continue editing.",
     instructionsStep4: "Use “Load project” to reopen a saved JSON file in the editor.",
     instructionsStep5: "Use “Create PNG” to export the current preview as an image in 1080 × 1920 pixels.",
-    removeHeaderLogo: "Remove header logo",
-    removeBackgroundImage: "Remove background image",
   },
 };
 
@@ -471,6 +467,7 @@ function createInitialProject() {
     customHeaderLogoScale: 100,
     customHeaderLogoOffsetX: 0,
     customHeaderLogoOffsetY: 0,
+  customHeaderLogoPosition: "top-center",
     footerText: "",
     floors: [
       createFloor("3. OG", [
@@ -813,6 +810,38 @@ function Toast({ toast }) {
 // Diese Komponente rendert die Live-Vorschau rechts.
 // Genau dieser Bereich wird später als PNG exportiert.
 ////////////////////////////////////////////////////////////
+
+function getHeaderLogoPositionStyle(position = "top-center") {
+  const positions = {
+    "top-left": {
+      justifyContent: "flex-start",
+      alignItems: "flex-start",
+    },
+    "top-center": {
+      justifyContent: "center",
+      alignItems: "flex-start",
+    },
+    "top-right": {
+      justifyContent: "flex-end",
+      alignItems: "flex-start",
+    },
+    "center-left": {
+      justifyContent: "flex-start",
+      alignItems: "center",
+    },
+    center: {
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    "center-right": {
+      justifyContent: "flex-end",
+      alignItems: "center",
+    },
+  };
+
+  return positions[position] || positions["top-center"];
+}
+
 function Preview({ project, t }) {
 const isCustom = project.theme === "custom";
 
@@ -1090,16 +1119,16 @@ const getSyncedFloorHeight = (floor, index) => {
     {isCustom && project.customHeaderMode === "logo" ? (
 <div className="custom-header-logo-fixed">
   <img
-  src={project.customHeaderLogo}
-  alt="Header Logo"
-  className="custom-header-logo"
-  style={{
-    width: `${clamp(project.customHeaderLogoScale || 100, 30, 300)}px`,
-    transform: `translate(${project.customHeaderLogoOffsetX || 0}px, ${
-      project.customHeaderLogoOffsetY || 0
-    }px)`,
-  }}
-/>
+    src={project.customHeaderLogo}
+    alt="Header Logo"
+    className="custom-header-logo"
+    style={{
+      width: `${clamp(project.customHeaderLogoScale || 70, 30, 300)}px`,
+      transform: `translate(${project.customHeaderLogoOffsetX || 0}px, ${
+        project.customHeaderLogoOffsetY || 0
+      }px)`,
+    }}
+  />
 </div>
     ) : (
       <>
@@ -1756,15 +1785,6 @@ const onCustomImageUpload = async (fieldName, file) => {
               )
             }
           />
-          {project.customBackgroundImage ? (
-  <button
-    type="button"
-    className="ghost-btn"
-    onClick={() => updateProject({ customBackgroundImage: null })}
-  >
-    {t.removeBackgroundImage}
-  </button>
-) : null}
         </div>
       )}
 
@@ -1819,15 +1839,6 @@ const onCustomImageUpload = async (fieldName, file) => {
                 )
               }
             />
-            {project.customHeaderLogo ? (
-  <button
-    type="button"
-    className="ghost-btn"
-    onClick={() => updateProject({ customHeaderLogo: null })}
-  >
-    {t.removeHeaderLogo}
-  </button>
-) : null}
           </div>
 
           <div className="field">
