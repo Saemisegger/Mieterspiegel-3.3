@@ -442,8 +442,6 @@ const createFloor = (label = "", tenants = [createTenant()]) => ({
   tenants,
 });
 
-const MAX_FLOORS = 10;
-
 ////////////////////////////////////////////////////////////
 // 🚀 STANDARD-PROJEKT
 // Wird geladen, wenn die App startet oder wenn man
@@ -840,13 +838,16 @@ const theme = isCustom
     0
   );
 
-  // Ab vielen Einträgen auf zwei Spalten umstellen
-const layoutLoad = visibleFloors.reduce(
-  (sum, floor) => sum + 1 + Math.max(0, floor.tenants.length - 1) * 0.75,
-  0
-);
+  // Ab vielen Einträgen auf zwei Spalten umstellen.
+  // Mehrere Parteien auf derselben Etage zählen zusätzlich mit,
+  // damit früher auf 2 Spalten gewechselt wird und nichts überläuft.
+  const layoutLoad = visibleFloors.reduce(
+    (sum, floor) => sum + 1 + Math.max(0, floor.tenants.length - 1) * 0.75,
+    0
+  );
 
-const useTwoColumns = visibleFloors.length >= 8 || totalEntries >= 10 || layoutLoad >= 8.5;
+  const useTwoColumns =
+    visibleFloors.length >= 8 || totalEntries >= 10 || layoutLoad >= 8.5;
 
   // Prüfen, ob Titel/Gebäudename/Footer überhaupt vorhanden sind
 const hasHeader =
@@ -1022,6 +1023,24 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
   fontWeight: 400,
 });
 
+// Höhe einer Etage berechnen. Zusätzliche Parteien brauchen mehr Platz.
+const getFloorVisualHeight = (floor) =>
+  rowHeight + Math.max(0, (floor?.tenants?.length || 0) - 1) * 22;
+
+// In der 2-Spalten-Ansicht müssen links und rechts pro Zeile
+// exakt dieselbe Höhe haben, damit die Trennlinien auf gleicher Höhe liegen.
+const getSyncedFloorHeight = (floor, index) => {
+  const ownHeight = getFloorVisualHeight(floor);
+
+  if (!useTwoColumns) return ownHeight;
+
+  const pairedIndex = index % 2 === 0 ? index + 1 : index - 1;
+  const pairedFloor = visibleFloors[pairedIndex];
+  const pairedHeight = pairedFloor ? getFloorVisualHeight(pairedFloor) : ownHeight;
+
+  return Math.max(ownHeight, pairedHeight);
+};
+
 
   return (
     <div className="preview-wrap">
@@ -1096,16 +1115,19 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
 
         <div className="preview-body">
           <div className={useTwoColumns ? "floors floors-two-columns" : "floors"}>
-            {visibleFloors.map((floor) => (
+            {visibleFloors.map((floor, index) => {
+              const syncedHeight = getSyncedFloorHeight(floor, index);
+
+              return (
               <div
                 className="floor-row"
                 key={floor.id}
                 style={{
                   gridTemplateColumns: `${layout.floorCol}px minmax(0, 1fr)`,
-                  minHeight: `${rowHeight + Math.max(0, floor.tenants.length - 1) * 22
-                  }px`,
-                  paddingTop: `${Math.max(6, rowHeight * 0.08)}px`,
-                  paddingBottom: `${Math.max(6, rowHeight * 0.08)}px`,
+                  minHeight: `${syncedHeight}px`,
+                  height: `${syncedHeight}px`,
+                  paddingTop: `${Math.max(6, syncedHeight * 0.08)}px`,
+                  paddingBottom: `${Math.max(6, syncedHeight * 0.08)}px`,
                 }}
               >
                 <div
@@ -1118,7 +1140,10 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
                   {floor.label}
                 </div>
 
-                <div className="floor-content">
+                <div
+                  className="floor-content"
+                  style={{ height: "100%", minWidth: 0 }}
+                >
                   {floor.tenants.map((tenant) => {
                     // Logosize auf sinnvolle Grenzen beschränken
                     const logoScale = clamp(tenant.logoScale || 100, 30, 300);
@@ -1165,12 +1190,9 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
                         {/* Text-Modus */}
 {tenant.mode === "text" ? (
   <div
-  className="tenant-text-wrap"
-  style={{
-    gap: `${layout.tenantInnerGap}px`,
-    minWidth: 0,
-  }}
->
+    className="tenant-text-wrap"
+    style={{ gap: `${layout.tenantInnerGap}px`, minWidth: 0 }}
+  >
     {/* NAME */}
 {tenant.name ? (
   <div
@@ -1182,6 +1204,7 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
       overflowWrap: "break-word",
       wordBreak: "break-word",
       maxWidth: "100%",
+      width: "100%",
       lineHeight: 1.15,
     }}
   >
@@ -1200,8 +1223,8 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
       overflowWrap: "break-word",
       wordBreak: "break-word",
       maxWidth: "100%",
-      lineHeight: 1.2,
       width: "100%",
+      lineHeight: 1.2,
     }}
   >
     {tenant.subtitle}
@@ -1218,12 +1241,13 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
                     className="floor-line"
                     style={{
                       background: theme.line,
-                      marginTop: `${Math.max(8, rowHeight * 0.12)}px`,
+                      marginTop: "auto",
                     }}
                   />
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -1250,6 +1274,11 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
     </div>
   );
 }
+
+////////////////////////////////////////////////////////////
+// 🔢 MAXIMALE ANZAHL STOCKWERKE
+////////////////////////////////////////////////////////////
+const MAX_FLOORS = 10;
 
 ////////////////////////////////////////////////////////////
 // 🚀 HAUPTKOMPONENTE DER APP
@@ -1381,40 +1410,43 @@ export default function App() {
   // NEUE ETAGE HINZUFÜGEN
   // Versucht automatisch eine sinnvolle Bezeichnung zu wählen
   //////////////////////////////////////////////////////////
-const addFloor = () => {
-  setProject((prev) => {
-    if (prev.floors.length >= MAX_FLOORS) {
-      showToast("Maximal 10 Stockwerke möglich.", "error");
-      return prev;
-    }
-
-    let newLabel = "EG";
-
-    if (prev.floors.length > 0) {
-      const normalizedLabels = prev.floors.map((f) =>
-        (f.label || "").trim().toUpperCase()
-      );
-
-      if (normalizedLabels.includes("EG")) {
-        const ogNumbers = prev.floors
-          .map((f) => {
-            const match = (f.label || "").match(/(\d+)\s*\.\s*OG/i);
-            return match ? parseInt(match[1], 10) : null;
-          })
-          .filter((n) => n !== null);
-
-        newLabel = ogNumbers.length > 0
-          ? `${Math.max(...ogNumbers) + 1}. OG`
-          : "1. OG";
+  const addFloor = () => {
+    setProject((prev) => {
+      if (prev.floors.length >= MAX_FLOORS) {
+        showToast("Maximal 10 Stockwerke möglich.", "error");
+        return prev;
       }
-    }
 
-    return {
-      ...prev,
-      floors: [createFloor(newLabel), ...prev.floors],
-    };
-  });
-};
+      let newLabel = "EG";
+
+      if (prev.floors.length > 0) {
+        const normalizedLabels = prev.floors.map((f) =>
+          (f.label || "").trim().toUpperCase()
+        );
+
+        if (normalizedLabels.includes("EG")) {
+          const ogNumbers = prev.floors
+            .map((f) => {
+              const match = (f.label || "").match(/(\d+)\s*\.\s*OG/i);
+              return match ? parseInt(match[1], 10) : null;
+            })
+            .filter((n) => n !== null);
+
+          if (ogNumbers.length > 0) {
+            newLabel = `${Math.max(...ogNumbers) + 1}. OG`;
+          } else {
+            newLabel = "1. OG";
+          }
+        }
+      }
+
+      return {
+        ...prev,
+        floors: [createFloor(newLabel), ...prev.floors],
+      };
+    });
+  };
+
   //////////////////////////////////////////////////////////
   // ETAGE LÖSCHEN
   //////////////////////////////////////////////////////////
@@ -1859,14 +1891,13 @@ const onCustomImageUpload = async (fieldName, file) => {
               <button className="ghost-btn" onClick={sortFloors}>
                 {t.sortFloors}
               </button>
-              <button className="primary-btn" onClick={addFloor}>
-                {t.addFloor}
-              </button>
-              <button className="primary-btn" onClick={addFloor}
+              <button
+                className="primary-btn"
+                onClick={addFloor}
                 disabled={project.floors.length >= MAX_FLOORS}
               >
-             {t.addFloor}
-            </button>
+                {t.addFloor}
+              </button>
             </div>
           </div>
 
