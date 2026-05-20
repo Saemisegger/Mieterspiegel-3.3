@@ -645,10 +645,9 @@ select:disabled {
 .floor-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   min-width: 0;
 }
-
 /* 
   Eine einzelne Firmen-/Tenant-Zeile in der Vorschau
 */

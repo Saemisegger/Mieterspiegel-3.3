@@ -1023,9 +1023,15 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
   fontWeight: 400,
 });
 
-// Höhe einer Etage berechnen. Zusätzliche Parteien brauchen mehr Platz.
+// Bei vielen Einträgen wird die Vorschau automatisch kompakter.
+// So bleiben mehrere Parteien pro Stockwerk besser innerhalb des 9:16-Formats.
+const extraPerTenant = isVeryDense ? 10 : isDense ? 14 : 22;
+const compactVerticalPadding = isVeryDense ? 2 : isDense ? 4 : Math.max(6, rowHeight * 0.08);
+
+// Höhe einer Etage berechnen. Zusätzliche Parteien brauchen mehr Platz,
+// aber bei dichter Vorschau weniger Zusatzhöhe, damit alles kompakter bleibt.
 const getFloorVisualHeight = (floor) =>
-  rowHeight + Math.max(0, (floor?.tenants?.length || 0) - 1) * 22;
+  rowHeight + Math.max(0, (floor?.tenants?.length || 0) - 1) * extraPerTenant;
 
 // In der 2-Spalten-Ansicht müssen links und rechts pro Zeile
 // exakt dieselbe Höhe haben, damit die Trennlinien auf gleicher Höhe liegen.
@@ -1126,8 +1132,8 @@ const getSyncedFloorHeight = (floor, index) => {
                   gridTemplateColumns: `${layout.floorCol}px minmax(0, 1fr)`,
                   minHeight: `${syncedHeight}px`,
                   height: `${syncedHeight}px`,
-                  paddingTop: `${Math.max(6, syncedHeight * 0.08)}px`,
-                  paddingBottom: `${Math.max(6, syncedHeight * 0.08)}px`,
+                  paddingTop: `${compactVerticalPadding}px`,
+                  paddingBottom: `${compactVerticalPadding}px`,
                 }}
               >
                 <div
@@ -1156,7 +1162,7 @@ const getSyncedFloorHeight = (floor, index) => {
                       <div
                         className="tenant-row"
                         key={tenant.id}
-                        style={{ gap: `${layout.tenantGap}px` }}
+                        style={{ gap: `${isDense ? Math.max(4, layout.tenantGap * 0.55) : layout.tenantGap}px` }}
                       >
                         {/* Logo-Modus */}
                         {tenant.mode === "logo" && tenant.logo ? (
@@ -1191,7 +1197,7 @@ const getSyncedFloorHeight = (floor, index) => {
 {tenant.mode === "text" ? (
   <div
     className="tenant-text-wrap"
-    style={{ gap: `${layout.tenantInnerGap}px`, minWidth: 0 }}
+    style={{ gap: `${isDense ? 1 : layout.tenantInnerGap}px`, minWidth: 0 }}
   >
     {/* NAME */}
 {tenant.name ? (
@@ -1205,7 +1211,7 @@ const getSyncedFloorHeight = (floor, index) => {
       wordBreak: "break-word",
       maxWidth: "100%",
       width: "100%",
-      lineHeight: 1.15,
+      lineHeight: isDense ? 1.08 : 1.15,
     }}
   >
     {tenant.name}
@@ -1224,7 +1230,7 @@ const getSyncedFloorHeight = (floor, index) => {
       wordBreak: "break-word",
       maxWidth: "100%",
       width: "100%",
-      lineHeight: 1.2,
+      lineHeight: isDense ? 1.08 : 1.2,
     }}
   >
     {tenant.subtitle}
