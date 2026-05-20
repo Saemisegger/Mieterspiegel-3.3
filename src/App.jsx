@@ -442,6 +442,8 @@ const createFloor = (label = "", tenants = [createTenant()]) => ({
   tenants,
 });
 
+const MAX_FLOORS = 10;
+
 ////////////////////////////////////////////////////////////
 // 🚀 STANDARD-PROJEKT
 // Wird geladen, wenn die App startet oder wenn man
@@ -1367,38 +1369,40 @@ export default function App() {
   // NEUE ETAGE HINZUFÜGEN
   // Versucht automatisch eine sinnvolle Bezeichnung zu wählen
   //////////////////////////////////////////////////////////
-  const addFloor = () => {
-    setProject((prev) => {
-      let newLabel = "EG";
+const addFloor = () => {
+  setProject((prev) => {
+    if (prev.floors.length >= MAX_FLOORS) {
+      showToast("Maximal 10 Stockwerke möglich.", "error");
+      return prev;
+    }
 
-      if (prev.floors.length > 0) {
-        const normalizedLabels = prev.floors.map((f) =>
-          (f.label || "").trim().toUpperCase()
-        );
+    let newLabel = "EG";
 
-        if (normalizedLabels.includes("EG")) {
-          const ogNumbers = prev.floors
-            .map((f) => {
-              const match = (f.label || "").match(/(\d+)\s*\.\s*OG/i);
-              return match ? parseInt(match[1], 10) : null;
-            })
-            .filter((n) => n !== null);
+    if (prev.floors.length > 0) {
+      const normalizedLabels = prev.floors.map((f) =>
+        (f.label || "").trim().toUpperCase()
+      );
 
-          if (ogNumbers.length > 0) {
-            newLabel = `${Math.max(...ogNumbers) + 1}. OG`;
-          } else {
-            newLabel = "1. OG";
-          }
-        }
+      if (normalizedLabels.includes("EG")) {
+        const ogNumbers = prev.floors
+          .map((f) => {
+            const match = (f.label || "").match(/(\d+)\s*\.\s*OG/i);
+            return match ? parseInt(match[1], 10) : null;
+          })
+          .filter((n) => n !== null);
+
+        newLabel = ogNumbers.length > 0
+          ? `${Math.max(...ogNumbers) + 1}. OG`
+          : "1. OG";
       }
+    }
 
-      return {
-        ...prev,
-        floors: [createFloor(newLabel), ...prev.floors],
-      };
-    });
-  };
-
+    return {
+      ...prev,
+      floors: [createFloor(newLabel), ...prev.floors],
+    };
+  });
+};
   //////////////////////////////////////////////////////////
   // ETAGE LÖSCHEN
   //////////////////////////////////////////////////////////
@@ -1846,6 +1850,11 @@ const onCustomImageUpload = async (fieldName, file) => {
               <button className="primary-btn" onClick={addFloor}>
                 {t.addFloor}
               </button>
+              <button className="primary-btn" onClick={addFloor}
+                disabled={project.floors.length >= MAX_FLOORS}
+              >
+             {t.addFloor}
+            </button>
             </div>
           </div>
 
