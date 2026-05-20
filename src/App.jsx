@@ -37,6 +37,7 @@ const TRANSLATIONS = {
     floorsAndTenants: "Etagen & Parteien",
     sortFloors: "Etagen sortieren",
     addFloor: "+ Etage hinzufügen",
+    maxFloorsWarning: "Maximal 10 Stockwerke möglich.",
     floorLabel: "Etage",
     textMode: "Text",
     logoMode: "Logo",
@@ -66,8 +67,8 @@ const TRANSLATIONS = {
     hintText: "PNG-Export: exakt 1080 × 1920 Pixel. Pro Eintrag ist entweder Text oder Logo möglich.",
     previewTitle: "Live-Vorschau · 9:16",
     exportMeta: "Export: 1080 × 1920 px",
-    denseWarning: "Hinweis: Viele Einträge vorhanden. Die Vorschau wurde automatisch kompakter gemacht.",
-    veryDenseWarning: "Achtung: Sehr viele Einträge. Die Schrift und Logos wurden stark verkleinert.",
+    denseWarning: "Hinweis: Viele Einträge vorhanden. Die Vorschau wurde automatisch kompakter dargestellt.",
+    veryDenseWarning: "Achtung: Sehr viele Einträge. Texte und Logos wurden stark verkleinert.",
     placeholderTitle: "z. B. Mieterverzeichnis",
     placeholderObject: "z. B. Bahnhofstrasse 10",
     placeholderFooter: "z. B. Willkommen",
@@ -111,6 +112,7 @@ const TRANSLATIONS = {
     floorsAndTenants: "Étages & locataires",
     sortFloors: "Trier les étages",
     addFloor: "+ Ajouter un étage",
+    maxFloorsWarning: "Maximum 10 étages possibles.",
     floorLabel: "Étage",
     textMode: "Texte",
     logoMode: "Logo",
@@ -140,7 +142,7 @@ const TRANSLATIONS = {
     hintText: "Export PNG : exactement 1080 × 1920 pixels. Chaque entrée peut contenir soit du texte, soit un logo.",
     previewTitle: "Aperçu en direct · 9:16",
     exportMeta: "Export : 1080 × 1920 px",
-    denseWarning: "Remarque : beaucoup d’entrées. L’aperçu a été automatiquement compacté.",
+    denseWarning: "Remarque : beaucoup d’entrées. L’aperçu a été automatiquement rendu plus compact.",
     veryDenseWarning: "Attention : beaucoup d’entrées. Les textes et logos ont été fortement réduits.",
     placeholderTitle: "p. ex. Répertoire des locataires",
     placeholderObject: "p. ex. Rue de la Gare 10",
@@ -185,6 +187,7 @@ const TRANSLATIONS = {
     floorsAndTenants: "Piani & inquilini",
     sortFloors: "Ordina piani",
     addFloor: "+ Aggiungi piano",
+    maxFloorsWarning: "Sono possibili al massimo 10 piani.",
     floorLabel: "Piano",
     textMode: "Testo",
     logoMode: "Logo",
@@ -259,6 +262,7 @@ const TRANSLATIONS = {
     floorsAndTenants: "Floors & tenants",
     sortFloors: "Sort floors",
     addFloor: "+ Add floor",
+    maxFloorsWarning: "A maximum of 10 floors is possible.",
     floorLabel: "Floor",
     textMode: "Text",
     logoMode: "Logo",
@@ -1030,15 +1034,8 @@ const compactVerticalPadding = isVeryDense ? 2 : isDense ? 4 : Math.max(6, rowHe
 
 // Höhe einer Etage berechnen. Zusätzliche Parteien brauchen mehr Platz,
 // aber bei dichter Vorschau weniger Zusatzhöhe, damit alles kompakter bleibt.
-const getFloorVisualHeight = (floor) => {
-  const tenantCount = floor?.tenants?.length || 0;
-
-  if (tenantCount === 0) {
-    return isVeryDense ? 32 : isDense ? 38 : Math.max(42, rowHeight * 0.55);
-  }
-
-  return rowHeight + Math.max(0, tenantCount - 1) * extraPerTenant;
-};
+const getFloorVisualHeight = (floor) =>
+  rowHeight + Math.max(0, (floor?.tenants?.length || 0) - 1) * extraPerTenant;
 
 // In der 2-Spalten-Ansicht müssen links und rechts pro Zeile
 // exakt dieselbe Höhe haben, damit die Trennlinien auf gleicher Höhe liegen.
@@ -1426,7 +1423,7 @@ export default function App() {
   const addFloor = () => {
     setProject((prev) => {
       if (prev.floors.length >= MAX_FLOORS) {
-        showToast("Maximal 10 Stockwerke möglich.", "error");
+        showToast(t.maxFloorsWarning, "error");
         return prev;
       }
 
