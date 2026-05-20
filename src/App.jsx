@@ -1096,7 +1096,7 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
                 className="floor-row"
                 key={floor.id}
                 style={{
-                  gridTemplateColumns: `${layout.floorCol}px 1fr`,
+                  gridTemplateColumns: `${layout.floorCol}px minmax(0, 1fr)`,
                   minHeight: `${rowHeight}px`,
                   paddingTop: `${Math.max(6, rowHeight * 0.08)}px`,
                   paddingBottom: `${Math.max(6, rowHeight * 0.08)}px`,
@@ -1159,9 +1159,12 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
                         {/* Text-Modus */}
 {tenant.mode === "text" ? (
   <div
-    className="tenant-text-wrap"
-    style={{ gap: `${layout.tenantInnerGap}px` }}
-  >
+  className="tenant-text-wrap"
+  style={{
+    gap: `${layout.tenantInnerGap}px`,
+    minWidth: 0,
+  }}
+>
     {/* NAME */}
 {tenant.name ? (
   <div
@@ -1192,6 +1195,7 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
       wordBreak: "break-word",
       maxWidth: "100%",
       lineHeight: 1.2,
+      width: "100%",
     }}
   >
     {tenant.subtitle}
