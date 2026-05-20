@@ -841,7 +841,12 @@ const theme = isCustom
   );
 
   // Ab vielen Einträgen auf zwei Spalten umstellen
-  const useTwoColumns = visibleFloors.length >= 10 || totalEntries >= 16;
+const layoutLoad = visibleFloors.reduce(
+  (sum, floor) => sum + 1 + Math.max(0, floor.tenants.length - 1) * 0.75,
+  0
+);
+
+const useTwoColumns = visibleFloors.length >= 8 || totalEntries >= 10 || layoutLoad >= 8.5;
 
   // Prüfen, ob Titel/Gebäudename/Footer überhaupt vorhanden sind
 const hasHeader =
@@ -1097,7 +1102,7 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
                 key={floor.id}
                 style={{
                   gridTemplateColumns: `${layout.floorCol}px minmax(0, 1fr)`,
-                  minHeight: `${rowHeight + Math.max(0, floor.tenants.length - 1) * 34
+                  minHeight: `${rowHeight + Math.max(0, floor.tenants.length - 1) * 22
                   }px`,
                   paddingTop: `${Math.max(6, rowHeight * 0.08)}px`,
                   paddingBottom: `${Math.max(6, rowHeight * 0.08)}px`,
