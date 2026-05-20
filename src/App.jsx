@@ -1090,16 +1090,18 @@ const getSyncedFloorHeight = (floor, index) => {
     {isCustom && project.customHeaderMode === "logo" ? (
 <div className="custom-header-logo-fixed">
   <img
-    src={project.customHeaderLogo}
-    alt="Header Logo"
-    className="custom-header-logo"
-    style={{
-      width: `${clamp(project.customHeaderLogoScale || 70, 30, 300)}px`,
-      transform: `translate(${project.customHeaderLogoOffsetX || 0}px, ${
-        project.customHeaderLogoOffsetY || 0
-      }px)`,
-    }}
-  />
+  src={project.customHeaderLogo}
+  alt="Header Logo"
+  className="custom-header-logo"
+  style={{
+    width: `${clamp(project.customHeaderLogoScale || 100, 30, 300)}px`,
+    transform: `translate(calc(-50% + ${
+      project.customHeaderLogoOffsetX || 0
+    }px), calc(-50% + ${
+      project.customHeaderLogoOffsetY || 0
+    }px))`,
+  }}
+/>
 </div>
     ) : (
       <>
