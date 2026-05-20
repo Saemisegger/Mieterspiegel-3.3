@@ -94,6 +94,8 @@ const TRANSLATIONS = {
     instructionsStep3: "Mit „Projekt speichern“ wird eine JSON-Datei erstellt. Diese kannst du später wieder laden und weiterbearbeiten.",
     instructionsStep4: "Mit „Projekt laden“ öffnest du eine gespeicherte JSON-Datei erneut im Editor.",
     instructionsStep5: "Mit „PNG erstellen“ exportierst du die aktuelle Vorschau als Bild im Format 1080 × 1920 Pixel.",
+    removeHeaderLogo: "Header-Logo entfernen",
+    removeBackgroundImage: "Hintergrundbild entfernen",
   },
 
   fr: {
@@ -319,6 +321,8 @@ const TRANSLATIONS = {
     instructionsStep3: "Use “Save project” to create a JSON file. You can load it again later and continue editing.",
     instructionsStep4: "Use “Load project” to reopen a saved JSON file in the editor.",
     instructionsStep5: "Use “Create PNG” to export the current preview as an image in 1080 × 1920 pixels.",
+    removeHeaderLogo: "Remove header logo",
+    removeBackgroundImage: "Remove background image",
   },
 };
 
@@ -1752,6 +1756,15 @@ const onCustomImageUpload = async (fieldName, file) => {
               )
             }
           />
+          {project.customBackgroundImage ? (
+  <button
+    type="button"
+    className="ghost-btn"
+    onClick={() => updateProject({ customBackgroundImage: null })}
+  >
+    {t.removeBackgroundImage}
+  </button>
+) : null}
         </div>
       )}
 
@@ -1806,6 +1819,15 @@ const onCustomImageUpload = async (fieldName, file) => {
                 )
               }
             />
+            {project.customHeaderLogo ? (
+  <button
+    type="button"
+    className="ghost-btn"
+    onClick={() => updateProject({ customHeaderLogo: null })}
+  >
+    {t.removeHeaderLogo}
+  </button>
+) : null}
           </div>
 
           <div className="field">
