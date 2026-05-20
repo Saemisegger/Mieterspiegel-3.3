@@ -1169,10 +1169,11 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
     style={{
       color: theme.text,
       fontSize: `${globalTenantNameFontSize}px`,
-      whiteSpace: tenant.name.includes("\n") ? "pre-line" : "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
+      whiteSpace: tenant.name.includes("\n") ? "pre-line" : "normal",
+      overflowWrap: "break-word",
+      wordBreak: "break-word",
       maxWidth: "100%",
+      lineHeight: 1.15,
     }}
   >
     {tenant.name}
@@ -1186,10 +1187,11 @@ const globalTenantSubtitleFontSize = getGlobalFittedFontSize({
     style={{
       color: theme.subtext,
       fontSize: `${globalTenantSubtitleFontSize}px`,
-      whiteSpace: tenant.subtitle.includes("\n") ? "pre-line" : "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
+      whiteSpace: tenant.subtitle.includes("\n") ? "pre-line" : "normal",
+      overflowWrap: "break-word",
+      wordBreak: "break-word",
       maxWidth: "100%",
+      lineHeight: 1.2,
     }}
   >
     {tenant.subtitle}
