@@ -1095,11 +1095,9 @@ const getSyncedFloorHeight = (floor, index) => {
   className="custom-header-logo"
   style={{
     width: `${clamp(project.customHeaderLogoScale || 100, 30, 300)}px`,
-    transform: `translate(calc(-50% + ${
-      project.customHeaderLogoOffsetX || 0
-    }px), calc(-50% + ${
+    transform: `translate(${project.customHeaderLogoOffsetX || 0}px, ${
       project.customHeaderLogoOffsetY || 0
-    }px))`,
+    }px)`,
   }}
 />
 </div>
